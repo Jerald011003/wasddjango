@@ -180,7 +180,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 # STATIC_URL = 'static/'
-# MEDIA_URL = '/images/'
+MEDIA_URL = '/images/'
 
 # STATICFILES_DIRS = [
 #     BASE_DIR / 'static',
@@ -188,7 +188,7 @@ USE_TZ = True
 # ]
 
 
-# MEDIA_ROOT = BASE_DIR / 'static/images'
+MEDIA_ROOT = BASE_DIR / 'static/images'
 # STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATIC_URL = 'static/'
@@ -197,9 +197,9 @@ STATICFILES_DIRS = [BASE_DIR / "static",]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static_cdn","static_root")
 
-MEDIA_URL = 'media/'
+# MEDIA_URL = 'media/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "static_cdn", "media_root")
+# MEDIA_ROOT = os.path.join(BASE_DIR, "static_cdn", "media_root")
 
 from backend.aws.conf import *
 CORS_ALLOW_ALL_ORIGINS = True
