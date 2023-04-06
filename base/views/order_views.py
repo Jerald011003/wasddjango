@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -56,7 +56,7 @@ def addOrderItems(request):
                 qty=i['qty'],
                 price=i['price'],
                 image=product.image.url,
-                download=product.download
+                download=product.download.url
             )
 
             # (4) Update stock
@@ -78,7 +78,7 @@ def getMyOrders(request):
 
 
 @api_view(['GET'])
-# @permission_classes([IsAdminUser])
+@permission_classes([IsAdminUser])
 def getOrders(request):
     orders = Order.objects.all()
     serializer = OrderSerializer(orders, many=True)
@@ -86,7 +86,7 @@ def getOrders(request):
 
 
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def getOrderById(request, pk):
 
     user = request.user
@@ -127,13 +127,21 @@ def updateOrderToDelivered(request, pk):
 
     return Response('Order was delivered')
 
-@api_view(['GET'])
-def download_file(request, pk):
-    product = Order.objects.get(_id=pk)
-    file_path = product.download.path
-    with open(file_path, 'rb') as f:
-        response = HttpResponse(f.read())
-        content_type, encoding = mimetypes.guess_type(file_path)
-        response['Content-Type'] = content_type
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(file_path))
+import boto3
+from django.http import FileResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.conf import settings
+
+class download_file(APIView):
+    def get(self, request, *args, **kwargs):
+        s3 = boto3.client('s3',
+                          aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                          region_name=settings.AWS_S3_REGION_NAME)
+        file_path = kwargs['file_path']  # the file path in S3 bucket
+        file_name = file_path.split('/')[-1]
+        file_object = s3.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=file_path)['Body']
+        response = FileResponse(file_object, as_attachment=True, filename=file_name)
         return response
+    

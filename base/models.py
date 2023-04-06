@@ -29,7 +29,12 @@ class Product(models.Model):
         max_digits=7, decimal_places=2, null=True, blank=True)
     countInStock = models.IntegerField(null=True, blank=True, default=0)
     createdAt = models.DateTimeField(auto_now_add=True)
-    download = models.FileField(upload_to=upload_image_path, null=True, blank=True)
+    download = models.FileField(null=True, blank=True)
+    watch = models.CharField(max_length=200, null=True, blank=True)
+
+    preorderdate = models.DateField(auto_now_add=False, null=True, blank=True)
+    numofPreorder = models.IntegerField(null=True, blank=True, default=0)
+
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
@@ -73,7 +78,8 @@ class Order(models.Model):
     deliveredAt = models.DateTimeField(
         auto_now_add=False, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
-    download = models.FileField(upload_to=upload_image_path, null=True, blank=True)
+    download = models.FileField(null=True, blank=True)
+    preorderdate = models.DateField(auto_now_add=False, null=True, blank=True)
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):
@@ -88,7 +94,9 @@ class OrderItem(models.Model):
     price = models.DecimalField(
         max_digits=7, decimal_places=2, null=True, blank=True)
     image = models.CharField(max_length=200, null=True, blank=True)
-    download = models.FileField(upload_to=upload_image_path, null=True, blank=True)
+    download = models.CharField(max_length=200, null=True, blank=True)
+    preorderdate = models.DateField(auto_now_add=False, null=True, blank=True)
+
     _id = models.AutoField(primary_key=True, editable=False)
 
     def __str__(self):

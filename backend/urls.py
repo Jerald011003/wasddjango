@@ -27,7 +27,9 @@ urlpatterns = [
     path('api/users/', include('base.urls.user_urls')),
     path('api/orders/', include('base.urls.order_urls')),
     # path('api/chats/', include('base.urls.chat_urls')),
-    path('api/', include('base.urls.friend_urls')),
+    # path('api/', include('base.urls.friend_urls')),
+    path('api/wish/', include('base.urls.wish_urls')),
+    path('api/chatfriend/', include('base.urls.chatfriend_urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

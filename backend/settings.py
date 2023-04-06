@@ -203,6 +203,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static_cdn","static_root")
 
 from backend.aws.conf import *
 CORS_ALLOW_ALL_ORIGINS = True
+AWS_DEFAULT_ACL = None
 
 
 # Dont forget to reset database connection and hide password

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.conf import settings
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -10,7 +11,9 @@ from base.serializers import ProductSerializer
 
 from rest_framework import status
 
-
+from django.http import HttpResponse, Http404
+import mimetypes
+import os
 @api_view(['GET'])
 def getProducts(request):
     query = request.query_params.get('keyword')
@@ -84,6 +87,9 @@ def updateProduct(request, pk):
     product.countInStock = data['countInStock']
     product.category = data['category']
     product.description = data['description']
+    product.download = data['download']
+    product.watch = data['watch']
+    product.preorderdate = data['preorderdate']
 
     product.save()
 
@@ -151,3 +157,23 @@ def createProductReview(request, pk):
         product.save()
 
         return Response('Review Added')
+
+@api_view(['GET'])
+def download_file2(request, pk):
+    try:
+        product = Product.objects.get(_id=pk)
+        serializer = ProductSerializer(product, many=False)
+        if not product.download:  # check if download attribute is set
+            raise Http404('No file associated with this product.')
+        file_path = os.path.join(settings.MEDIA_ROOT, product.download.name)
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read())
+            content_type, encoding = mimetypes.guess_type(file_path)
+            response['Content-Type'] = content_type
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(os.path.basename(file_path))
+            return response
+    except Product.DoesNotExist:
+        raise Http404('Product does not exist.')
+    except Exception as e:
+        raise Http404(str(e))
+    
